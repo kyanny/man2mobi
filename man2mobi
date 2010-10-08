@@ -30,7 +30,7 @@ man2mobi - convert man pages to mobi format
 
 =head1 SYNOPSIS
 
- $ man2mobi perl
+ $ man2mobi name
 
 =head1 DESCRIPTION
 
