@@ -1,0 +1,7 @@
+man2mobi - convert man pages to mobi format
+
+man2mobi takes one argument. Argument is a name of man page.
+
+man2mobi depends on man2html(1) and KindleGen.
+
+Get KindleGen from http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000234621
