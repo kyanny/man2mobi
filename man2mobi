@@ -18,11 +18,11 @@ my $name = shift || HelpMessage();
 # main
 sub main {
     if ($0 =~ /man2kindle$/) {
-        _print("run as `man2kindle'") if $verbose;
+        print("run as `man2kindle'\n") if $verbose;
         man2kindle($name, $from, $to);
     }
     else {
-        _print("run as `man2mobi'") if $verbose;
+        print("run as `man2mobi'\n") if $verbose;
         man2mobi($name);
     }
 }
