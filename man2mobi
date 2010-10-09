@@ -109,8 +109,6 @@ $ man2mobi name
 
   man2kindle -f foo@example.com -t bar@example.com name
 
-=end
-
 =head1 DESCRIPTION
 
 man2mobi は name として指定されたマニュアルページを .mobi 形式に変換する。変換には man2html(1) と Amazon Kindle's Publishing Program で配布されている KindleGen が必要である。 KindleGen のアーカイブに含まれている kindlegen をパスの通ったところへ配置しておくこと。なお、 KindleGen の利用には別途 KINDLEGEN SOFTWARE END USER LICENSE AGREEMENT への同意が必要である。
