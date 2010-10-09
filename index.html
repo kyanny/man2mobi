@@ -1,0 +1,89 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>man2mobi - マニュアルページを .mobi 形式に変換する</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:kyanny@kyanny-macbook.local" />
+</head>
+
+<body style="background-color: white">
+
+
+<!-- INDEX BEGIN -->
+<div name="index">
+<p><a name="__index__"></a></p>
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#author">AUTHOR</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+	<li><a href="#license">LICENSE</a></li>
+</ul>
+
+<hr name="index" />
+</div>
+<!-- INDEX END -->
+
+<p>
+</p>
+<hr />
+<h1><a name="name">NAME</a></h1>
+<p>man2mobi - マニュアルページを .mobi 形式に変換する</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<p>$ man2mobi name</p>
+<pre>
+  または</pre>
+<pre>
+  man2kindle -f foo@example.com -t bar@example.com name</pre>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>man2mobi は name として指定されたマニュアルページを .mobi 形式に変換する。変換には man2html(1) と Amazon Kindle's Publishing Program で配布されている KindleGen が必要である。 KindleGen のアーカイブに含まれている kindlegen をパスの通ったところへ配置しておくこと。なお、 KindleGen の利用には別途 KINDLEGEN SOFTWARE END USER LICENSE AGREEMENT への同意が必要である。</p>
+<p>man2kindle は man2mobi へのシンボリックリンクである。 man2kindle は name として指定されたマニュアルページを .mobi 形式に変換し、そのファイルをメッセージに添付してコマンドラインオプションで指定されたメールアドレスに送信する。メールの送信には <code>mutt(1)</code> が必要である。</p>
+<p>Kindle に直接メールで .mobi 形式のファイルを送信する場合、 @kindle.com または @free.kindle.com というドメインのメールアドレスが利用できる。これらのアドレスにメールを送信するには、Manage Your Kindle ページで送信元メールアドレスを許可する必要がある。詳細は Sending Personal Documents to Kindle ページを参照のこと。</p>
+<p>
+</p>
+<hr />
+<h1><a name="author">AUTHOR</a></h1>
+<p>Kensuke Kaneko &lt;kyanny at gmail.com&gt;</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<ul>
+<li>
+<p>man2html(1)</p>
+</li>
+<li>
+<p><code>mutt(1)</code></p>
+</li>
+<li>
+<p>Amazon Kindle's Publishing Program
+<a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000234621">http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000234621</a></p>
+</li>
+<li>
+<p>Sending Personal Documents to Kindle
+<a href="http://www.amazon.com/gp/help/customer/display.html?nodeId=200505520&#email">http://www.amazon.com/gp/help/customer/display.html?nodeId=200505520&#email</a></p>
+</li>
+<li>
+<p>Manage Your Kindle
+<a href="http://www.amazon.com/manageyourkindle">http://www.amazon.com/manageyourkindle</a></p>
+</li>
+</ul>
+<p>
+</p>
+<hr />
+<h1><a name="license">LICENSE</a></h1>
+<p>This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself.</p>
+
+</body>
+
+</html>
