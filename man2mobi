@@ -18,11 +18,11 @@ my $name = shift || HelpMessage();
 # main
 sub main {
     if ($0 =~ /man2kindle$/) {
-        print "run as `man2kindle'\n" if $verbose;
+        _print("run as `man2kindle'") if $verbose;
         man2kindle($name, $from, $to);
     }
     else {
-        print "run as `man2mobi'\n" if $verbose;
+        _print("run as `man2mobi'") if $verbose;
         man2mobi($name);
     }
 }
@@ -33,40 +33,45 @@ sub man2mobi {
     my @delete = ();
     
     # get man file's absolute path
-    print "\$ man -W $name\n" if $verbose;
-    my $filename_man = `man -W $name`;
+    my $cmd = "man -W $name";
+    _print($cmd) if $verbose;
+    my $filename_man = `$cmd`;
     chomp $filename_man;
     
     # if man file is gzipped, extract it and save to temporary file
     if ($filename_man =~ /\.gz$/) {
         my ($tmp_fh_man, $tmp_filename_man) = tempfile;
         push @delete, $tmp_filename_man;
-        print "\$ gunzip -c $filename_man > $tmp_filename_man\n" if $verbose;
-        system("gunzip -c $filename_man > $tmp_filename_man");
+        $cmd = "gunzip -c $filename_man > $tmp_filename_man";
+        _print($cmd) if $verbose;
+        system($cmd);
         $filename_man = $tmp_filename_man;
     }
 
     # generate html file from man file by man2html
     my ($tmp_fh_html, $tmp_filename_html) = tempfile(SUFFIX => '.html');
     push @delete, $tmp_filename_html;
-    print "\$ man2html $filename_man > $tmp_filename_html\n" if $verbose;
-    `man2html $filename_man > $tmp_filename_html`;
+    $cmd = "man2html $filename_man > $tmp_filename_html";
+    _print($cmd) if $verbose;
+    `$cmd`;
 
     # generate mobi file by kindlegen
-    print "\$ kindlegen $tmp_filename_html\n" if $verbose;
-    `kindlegen $tmp_filename_html`;
+    $cmd = "kindlegen $tmp_filename_html";
+    _print($cmd) if $verbose;
+    `$cmd`;
 
     # copy generated mobi file (under temporary directory) to current directory
     (my $tmp_filename_mobi = $tmp_filename_html) =~ s/\.html/.mobi/;
     push @delete, $tmp_filename_mobi;
     my $filename_mobi = catfile(rel2abs(curdir), "$name.mobi");
-    print "\$ cp $tmp_filename_mobi $filename_mobi\n" if $verbose;
-    `cp $tmp_filename_mobi $filename_mobi`;
+    $cmd = "cp $tmp_filename_mobi $filename_mobi";
+    _print($cmd) if $verbose;
+    `$cmd`;
     
     # delete temporary files
     for (@delete) {
+        _print("rm $_") if $verbose > 1;
         unlink($_);
-        print "rm $_\n" if $verbose > 1;
     }
 }
 
@@ -78,11 +83,12 @@ sub man2kindle {
     man2mobi($name);
 
     # send email via mutt
-       # print "mutt -e 'set from=$from; set envelope_from=yes' -a $name.mobi $to", "\n";
-    #my $ret = `mutt -e 'set from=$from; set envelope_from=yes' -a $name.mobi $to < /dev/null`;
-    print "mutt -e 'set from=$from' -a $name.mobi $to < /dev/null\n" if $verbose;
-    system("mutt -e 'set from=$from' -a $name.mobi $to < /dev/null");
+    my $cmd = "mutt -e 'set from=$from' -a $name.mobi $to < /dev/null";
+    _print($cmd) if $verbose;
+    system($cmd);
 }
+
+sub _print { print "\$ ", @_, "\n"; }
 
 # run
 main();
