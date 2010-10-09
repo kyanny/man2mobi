@@ -1,33 +1,39 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 use strict;
 use warnings;
 no warnings qw(uninitialized);
 
-use File::Spec::Functions qw(:ALL);
 use File::Temp qw(tempfile);
-use File::Copy;
+use File::Spec::Functions qw(:ALL);
 use Getopt::Long qw(HelpMessage :config auto_help);
 
-my $name = shift || HelpMessage();
-my ($from, $to);
+my ($from, $to, $verbose);
 GetOptions(
-    'f|from=s' => \$from,
-    't|to=s' => \$to,
-) or HelpMessage();
-
-my $send_email = $0 =~ /man2kindle$/;
-my @delete = ();
+    "from=s" => \$from,
+    "to=s" => \$to,
+    "verbose+" => \$verbose,
+);
+my $name = shift || HelpMessage();
 
 # main
 sub main {
-    man2mobi($name);
+    if ($0 =~ /man2kindle$/) {
+        print "run as `man2kindle'\n" if $verbose;
+        man2kindle($name, $from, $to);
+    }
+    else {
+        print "run as `man2mobi'\n" if $verbose;
+        man2mobi($name);
+    }
 }
 
 # man2mobi
 sub man2mobi {
     my ($name) = shift;
+    my @delete = ();
     
     # get man file's absolute path
+    print "\$ man -W $name\n" if $verbose;
     my $filename_man = `man -W $name`;
     chomp $filename_man;
     
@@ -35,6 +41,7 @@ sub man2mobi {
     if ($filename_man =~ /\.gz$/) {
         my ($tmp_fh_man, $tmp_filename_man) = tempfile;
         push @delete, $tmp_filename_man;
+        print "\$ gunzip -c $filename_man > $tmp_filename_man\n" if $verbose;
         system("gunzip -c $filename_man > $tmp_filename_man");
         $filename_man = $tmp_filename_man;
     }
@@ -42,23 +49,43 @@ sub man2mobi {
     # generate html file from man file by man2html
     my ($tmp_fh_html, $tmp_filename_html) = tempfile(SUFFIX => '.html');
     push @delete, $tmp_filename_html;
+    print "\$ man2html $filename_man > $tmp_filename_html\n" if $verbose;
     `man2html $filename_man > $tmp_filename_html`;
 
     # generate mobi file by kindlegen
+    print "\$ kindlegen $tmp_filename_html\n" if $verbose;
     `kindlegen $tmp_filename_html`;
 
     # copy generated mobi file (under temporary directory) to current directory
     (my $tmp_filename_mobi = $tmp_filename_html) =~ s/\.html/.mobi/;
     push @delete, $tmp_filename_mobi;
     my $filename_mobi = catfile(rel2abs(curdir), "$name.mobi");
-    copy($tmp_filename_mobi, $filename_mobi);
+    print "\$ cp $tmp_filename_mobi $filename_mobi\n" if $verbose;
+    `cp $tmp_filename_mobi $filename_mobi`;
     
     # delete temporary files
-    unlink($_) for @delete;
+    for (@delete) {
+        unlink($_);
+        print "rm $_\n" if $verbose > 1;
+    }
 }
 
-main();
+sub man2kindle {
+    my ($name, $from, $to) = @_;
+    HelpMessage() unless $from and $to;
 
+    # generate mobi file by man2mobi
+    man2mobi($name);
+
+    # send email via mutt
+       # print "mutt -e 'set from=$from; set envelope_from=yes' -a $name.mobi $to", "\n";
+    #my $ret = `mutt -e 'set from=$from; set envelope_from=yes' -a $name.mobi $to < /dev/null`;
+    print "mutt -e 'set from=$from' -a $name.mobi $to < /dev/null\n" if $verbose;
+    system("mutt -e 'set from=$from' -a $name.mobi $to < /dev/null");
+}
+
+# run
+main();
 
 __END__
 
@@ -69,6 +96,8 @@ man2mobi - convert man pages to mobi format
 =head1 SYNOPSIS
 
  $ man2mobi name
+   or
+ $ man2kindle --from=foo@example.com --to=bar@example.com name
 
 =head1 DESCRIPTION
 
