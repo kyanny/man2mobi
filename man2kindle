@@ -1,15 +1,21 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
+no warnings qw(uninitialized);
 
 use File::Spec::Functions qw(:ALL);
 use File::Temp qw(tempfile);
 use File::Copy;
-use Getopt::Long qw(HelpMessage);
-use Pod::Usage;
+use Getopt::Long qw(HelpMessage :config auto_help);
 
-GetOptions('h|help' => \&HelpMessage);
-my $name = shift || pod2usage(2);
+my $name = shift || HelpMessage();
+my ($from, $to);
+GetOptions(
+    'f|from=s' => \$from,
+    't|to=s' => \$to,
+) or HelpMessage();
+
+my $send_email = $0 =~ /man2kindle$/;
 my @delete = ();
 
 # get man file's absolute path
