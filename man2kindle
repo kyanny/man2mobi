@@ -18,34 +18,46 @@ GetOptions(
 my $send_email = $0 =~ /man2kindle$/;
 my @delete = ();
 
-# get man file's absolute path
-my $filename_man = `man -W $name`;
-chomp $filename_man;
-
-# if man file is gzipped, extract it and save to temporary file
-if ($filename_man =~ /\.gz$/) {
-    my ($tmp_fh_man, $tmp_filename_man) = tempfile;
-    push @delete, $tmp_filename_man;
-    system("gunzip -c $filename_man > $tmp_filename_man");
-    $filename_man = $tmp_filename_man;
+# main
+sub main {
+    man2mobi($name);
 }
 
-# generate html file from man file by man2html
-my ($tmp_fh_html, $tmp_filename_html) = tempfile(SUFFIX => '.html');
-push @delete, $tmp_filename_html;
-`man2html $filename_man > $tmp_filename_html`;
+# man2mobi
+sub man2mobi {
+    my ($name) = shift;
+    
+    # get man file's absolute path
+    my $filename_man = `man -W $name`;
+    chomp $filename_man;
+    
+    # if man file is gzipped, extract it and save to temporary file
+    if ($filename_man =~ /\.gz$/) {
+        my ($tmp_fh_man, $tmp_filename_man) = tempfile;
+        push @delete, $tmp_filename_man;
+        system("gunzip -c $filename_man > $tmp_filename_man");
+        $filename_man = $tmp_filename_man;
+    }
 
-# generate mobi file by kindlegen
-`kindlegen $tmp_filename_html`;
+    # generate html file from man file by man2html
+    my ($tmp_fh_html, $tmp_filename_html) = tempfile(SUFFIX => '.html');
+    push @delete, $tmp_filename_html;
+    `man2html $filename_man > $tmp_filename_html`;
 
-# copy generated mobi file (under temporary directory) to current directory
-(my $tmp_filename_mobi = $tmp_filename_html) =~ s/\.html/.mobi/;
-push @delete, $tmp_filename_mobi;
-my $filename_mobi = catfile(rel2abs(curdir), "$name.mobi");
-copy($tmp_filename_mobi, $filename_mobi);
+    # generate mobi file by kindlegen
+    `kindlegen $tmp_filename_html`;
 
-# delete temporary files
-unlink($_) for @delete;
+    # copy generated mobi file (under temporary directory) to current directory
+    (my $tmp_filename_mobi = $tmp_filename_html) =~ s/\.html/.mobi/;
+    push @delete, $tmp_filename_mobi;
+    my $filename_mobi = catfile(rel2abs(curdir), "$name.mobi");
+    copy($tmp_filename_mobi, $filename_mobi);
+    
+    # delete temporary files
+    unlink($_) for @delete;
+}
+
+main();
 
 
 __END__
